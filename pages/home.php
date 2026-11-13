@@ -7,7 +7,7 @@ require __DIR__ . '/../includes/header.php';
 
 <div class="page-title">
     <h1>Home</h1>
-    <p>Welcome back</p>
+    <p>Welcome back!</p>
 </div>
 
 <!-- Big picture: changes automatically. Timing is $heroSlideInterval in includes/config.php -->
@@ -31,15 +31,16 @@ require __DIR__ . '/../includes/header.php';
     <div class="section-head">
         <div>
             <h2>Curated Selection</h2>
-            <p>Hand-picked artworks from our artists</p>
+            <p>Explore fine art masterworks currently available in the gallery</p>
         </div>
-        <a class="view-all" href="gallery.php">View all &#8964;</a>
+        <a class="view-all" href="new.php">View all &#8964;</a>
     </div>
 
     <div class="marquee" style="--marquee-duration: <?= (int) $marqueeSeconds ?>s">
         <div class="marquee-track">
+            <?php $curated = array_filter($artworks, function ($a) { return $a['section'] === 'curated'; }); ?>
             <?php for ($copy = 0; $copy < 4; $copy++): ?>
-                <?php foreach ($artworks as $art): ?>
+                <?php foreach ($curated as $art): ?>
                     <?php mini_card($art, $copy > 0); ?>
                 <?php endforeach; ?>
             <?php endfor; ?>

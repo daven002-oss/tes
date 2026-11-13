@@ -15,9 +15,9 @@ $activePage = '';
 require __DIR__ . '/../includes/header.php';
 ?>
 
-<section class="login-wrap">
+<section class="auth">
     <h1>Artspace<br>Welcome Back</h1>
-    <p class="sub">Sign in to your account</p>
+    <p class="sub">sign in to your account</p>
 
     <?php if ($notice): ?>
         <p class="notice"><?= e($notice) ?></p>
@@ -30,13 +30,13 @@ require __DIR__ . '/../includes/header.php';
         <label for="password">Password</label>
         <input type="password" id="password" name="password" required>
 
-        <div class="login-extras">
-            <label style="margin:0;font-weight:400"><input type="checkbox" name="remember"> Remember me</label>
+        <div class="auth-extras">
+            <label class="check"><input type="checkbox" name="remember"> Remember me</label>
             <a href="#">Forgot password?</a>
         </div>
 
-        <button class="btn" type="submit">Login</button>
-        <p class="signup">Don't have an account? <a href="#">Sign up</a></p>
+        <button class="btn-auth" type="submit">Login</button>
+        <p class="auth-switch">Don't have an account? <a href="signup.php">Sign up</a></p>
     </form>
 </section>
 

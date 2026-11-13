@@ -35,6 +35,48 @@ document.addEventListener('DOMContentLoaded', function () {
         start();
     });
 
+    // ---------- Header search: the magnifier opens the search box ----------
+    document.querySelectorAll('.search').forEach(function (form) {
+        var btn = form.querySelector('.search-btn');
+        var input = form.querySelector('input');
+
+        function setOpen(open) {
+            form.classList.toggle('open', open);
+            var header = form.closest('.site-header');
+            if (header) header.classList.toggle('search-open', open);
+            btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+            if (open) input.focus();
+        }
+
+        btn.addEventListener('click', function () {
+            if (!form.classList.contains('open')) {
+                setOpen(true);                       // closed -> open it
+            } else if (input.value.trim() !== '') {
+                form.submit();                       // open + typed something -> search
+            } else {
+                setOpen(false);                      // open + empty -> close it
+            }
+        });
+
+        input.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape') {
+                setOpen(false);
+                btn.focus();
+            }
+        });
+
+        // Click anywhere else on the page: close the box if it is empty.
+        document.addEventListener('click', function (event) {
+            if (!form.contains(event.target) && input.value.trim() === '') {
+                setOpen(false);
+            }
+        });
+
+        form.addEventListener('submit', function (event) {
+            if (input.value.trim() === '') event.preventDefault();
+        });
+    });
+
     // ---------- Heart (like) buttons ----------
     document.querySelectorAll('.heart').forEach(function (btn) {
         btn.addEventListener('click', function (event) {

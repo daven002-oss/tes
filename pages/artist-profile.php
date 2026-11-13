@@ -56,7 +56,7 @@ require __DIR__ . '/../includes/header.php';
                 <h2>Artworks</h2>
                 <p>Works by <?= e($artist['name']) ?></p>
             </div>
-            <a class="view-all" href="gallery.php">View all</a>
+            <a class="view-all" href="new.php">View all</a>
         </div>
 
         <?php if ($works): ?>

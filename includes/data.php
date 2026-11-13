@@ -26,17 +26,87 @@ $artists = [
 ];
 
 // ---------- Artworks ----------
+// Short helper so each artwork is one line. Order of the first arguments:
+//   id, section, title, artist name, artist id (a number from $artists above, or null)
+// section 'curated' = shown in the Home page scroller
+// section 'new'     = shown on the New page
+// Put extra/changed details in the last argument, e.g. ['price' => '$500 USD'].
+function make_art(int $id, string $section, string $title, string $artist, ?int $artistId = null, array $extra = []): array
+{
+    return array_merge([
+        'id'          => $id,
+        'section'     => $section,
+        'title'       => $title,
+        'artist'      => $artist,
+        'artist_id'   => $artistId,
+        'image'       => '',
+        'size'        => '1920 x 1080',
+        'medium'      => 'Digital art',
+        'year'        => '2024',
+        'location'    => 'Los Angeles',
+        'price'       => '$1,000 USD',
+        'description' => 'Placeholder description for this artwork. Change this text in includes/data.php.',
+    ], $extra);
+}
+
 $artworks = [
-    ['id' => 1, 'title' => 'Artwork Title 1', 'artist_id' => 4, 'image' => '', 'size' => '1920 x 1080', 'medium' => 'Digital art', 'year' => '2024', 'location' => 'Los Angeles', 'price' => '$10,000 USD', 'description' => 'Placeholder description for artwork 1. Change this text in includes/data.php.'],
-    ['id' => 2, 'title' => 'Artwork Title 2', 'artist_id' => 1, 'image' => '', 'size' => '1920 x 1080', 'medium' => 'Oil on canvas', 'year' => '2023', 'location' => 'Jakarta', 'price' => '$2,500 USD', 'description' => 'Placeholder description for artwork 2. Change this text in includes/data.php.'],
-    ['id' => 3, 'title' => 'Artwork Title 3', 'artist_id' => 1, 'image' => '', 'size' => '1600 x 1200', 'medium' => 'Watercolor', 'year' => '2022', 'location' => 'Bali', 'price' => '$1,800 USD', 'description' => 'Placeholder description for artwork 3. Change this text in includes/data.php.'],
-    ['id' => 4, 'title' => 'Artwork Title 4', 'artist_id' => 1, 'image' => '', 'size' => '1600 x 1200', 'medium' => 'Acrylic', 'year' => '2024', 'location' => 'Tokyo', 'price' => '$3,200 USD', 'description' => 'Placeholder description for artwork 4. Change this text in includes/data.php.'],
-    ['id' => 5, 'title' => 'Artwork Title 5', 'artist_id' => 2, 'image' => '', 'size' => '2000 x 1500', 'medium' => 'Digital art', 'year' => '2021', 'location' => 'London', 'price' => '$900 USD', 'description' => 'Placeholder description for artwork 5. Change this text in includes/data.php.'],
-    ['id' => 6, 'title' => 'Artwork Title 6', 'artist_id' => 2, 'image' => '', 'size' => '2000 x 1500', 'medium' => 'Oil on canvas', 'year' => '2023', 'location' => 'Singapore', 'price' => '$4,000 USD', 'description' => 'Placeholder description for artwork 6. Change this text in includes/data.php.'],
-    ['id' => 7, 'title' => 'Artwork Title 7', 'artist_id' => 3, 'image' => '', 'size' => '1500 x 1500', 'medium' => 'Pastel', 'year' => '2020', 'location' => 'Auckland', 'price' => '$1,100 USD', 'description' => 'Placeholder description for artwork 7. Change this text in includes/data.php.'],
-    ['id' => 8, 'title' => 'Artwork Title 8', 'artist_id' => 3, 'image' => '', 'size' => '1500 x 1500', 'medium' => 'Digital art', 'year' => '2025', 'location' => 'Surabaya', 'price' => '$1,450 USD', 'description' => 'Placeholder description for artwork 8. Change this text in includes/data.php.'],
-    ['id' => 9, 'title' => 'Artwork Title 9', 'artist_id' => 4, 'image' => '', 'size' => '1920 x 1080', 'medium' => 'Digital art', 'year' => '2025', 'location' => 'Los Angeles', 'price' => '$7,500 USD', 'description' => 'Placeholder description for artwork 9. Change this text in includes/data.php.'],
+    // Home page - Curated Selection
+    make_art(1,  'curated', 'floweR-mAN',    'Slnae'),
+    make_art(2,  'curated', 'The phandom',   'venglish viera'),
+    make_art(3,  'curated', 'Vangush',       'D0ria', 4, ['price' => '$10,000 USD', 'year' => '1999 - 2009']),
+    make_art(4,  'curated', 'St mount',      'maldini zidane'),
+    make_art(5,  'curated', 'Monolith',      'Gattuso'),
+    make_art(6,  'curated', 'Ephemeral',     'chandra'),
+
+    // New page
+    make_art(7,  'new', 'Golden lake',   'makoto', 1),
+    make_art(8,  'new', 'Messiah',       'ewwiieess'),
+    make_art(9,  'new', 'Cliffs',        'jeomin1101'),
+    make_art(10, 'new', 'Acacia',        'thuglifebees'),
+    make_art(11, 'new', 'Mount',         'frede'),
+    make_art(12, 'new', 'Green Hills',   'wen chai fa'),
+    make_art(13, 'new', 'Grey Hills',    'martin'),
+    make_art(14, 'new', 'Green Pasture', 'erviana'),
+    make_art(15, 'new', 'Dusk Mountain', 'awang'),
 ];
+
+// Make sure every artist profile has 3 placeholder artworks to show.
+// (These only appear on profile pages. Delete this block once real data exists.)
+$placeholderId = 100;
+foreach ($artists as $a) {
+    $count = 0;
+    foreach ($artworks as $w) {
+        if ($w['artist_id'] === $a['id']) {
+            $count++;
+        }
+    }
+    while ($count < 3) {
+        $artworks[] = make_art($placeholderId++, 'profile', 'Artwork Title', $a['name'], $a['id']);
+        $count++;
+    }
+}
+
+// ---------- Artwork showcase ----------
+$showcases = [
+    ['id' => 1, 'title' => 'The Red Hall',       'by' => 'Aisha Rahman'],
+    ['id' => 2, 'title' => 'Perspective Shift',  'by' => 'Kenji Tanaka'],
+    ['id' => 3, 'title' => 'The Golden Age',     'by' => 'Chloe Dublos'],
+    ['id' => 4, 'title' => 'Salon Style',        'by' => 'David Chen'],
+    ['id' => 5, 'title' => 'The Atrium',         'by' => 'Isabelia Rossi'],
+    ['id' => 6, 'title' => 'The skyfall',        'by' => 'deross'],
+    ['id' => 7, 'title' => 'ghost Style',        'by' => 'David Chen'],
+    ['id' => 8, 'title' => 'The hallway',        'by' => 'Isabelia Rossi'],
+    ['id' => 9, 'title' => 'Datrium',            'by' => 'Isabelia Rossi'],
+];
+// Fill in the details every showcase shares (change any of them per showcase above).
+foreach ($showcases as $i => $s) {
+    $showcases[$i] += [
+        'image'       => '',
+        'location'    => 'Gallery location placeholder',
+        'dates'       => 'Dates to be announced',
+        'description' => 'Placeholder description for this showcase. Change this text in includes/data.php.',
+    ];
+}
 
 // ---------- Artspace events ----------
 $events = [

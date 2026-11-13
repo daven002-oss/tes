@@ -15,7 +15,7 @@ if (!$art) {
 }
 
 $pageTitle  = $art ? $art['title'] : 'Artwork not found';
-$activePage = 'artwork';
+$activePage = '';   // not in the header menu any more, so nothing is underlined
 require __DIR__ . '/../includes/header.php';
 ?>
 
@@ -28,7 +28,13 @@ require __DIR__ . '/../includes/header.php';
         <div class="media r-34"><?= render_image($art['image'], $art['title']) ?></div>
 
         <div class="detail-info">
-            <p class="by"><a href="artist-profile.php?id=<?= (int) $art['artist_id'] ?>"><?= e(artist_name((int) $art['artist_id'])) ?></a></p>
+            <p class="by">
+                <?php if ($art['artist_id']): ?>
+                    <a href="artist-profile.php?id=<?= (int) $art['artist_id'] ?>"><?= e($art['artist']) ?></a>
+                <?php else: ?>
+                    <?= e($art['artist']) ?>
+                <?php endif; ?>
+            </p>
             <h2><?= e($art['title']) ?></h2>
             <p class="specs">
                 Size: <?= e($art['size']) ?><br>
@@ -42,7 +48,7 @@ require __DIR__ . '/../includes/header.php';
         </div>
     </section>
 <?php else: ?>
-    <p class="empty-state">We couldn't find that artwork. <a href="gallery.php"><u>Back to the gallery</u></a></p>
+    <p class="empty-state">We couldn't find that artwork. <a href="new.php"><u>Back to New</u></a></p>
 <?php endif; ?>
 
 <?php require __DIR__ . '/../includes/footer.php'; ?>
