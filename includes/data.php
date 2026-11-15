@@ -98,6 +98,16 @@ $showcases = [
     ['id' => 8, 'title' => 'The hallway',        'by' => 'Isabelia Rossi'],
     ['id' => 9, 'title' => 'Datrium',            'by' => 'Isabelia Rossi'],
 ];
+// Placeholder comments shown under every showcase.
+// To give one showcase its own comments, add a 'comments' => [...] list to it above.
+$defaultComments = [
+    ['name' => 'Ralph Edwards', 'date' => 'Aug 19, 2021', 'text' => 'In mauris porttitor tincidunt mauris massa sit lorem sed scelerisque. Fringilla pharetra vel massa enim sollicitudin cras. At pulvinar eget sociis adipiscing eget donec ultricies nibh tristique.'],
+    ['name' => 'Ralph Edwards', 'date' => 'Aug 19, 2021', 'text' => 'In mauris porttitor tincidunt mauris massa sit lorem sed scelerisque. Fringilla pharetra vel massa enim sollicitudin cras. At pulvinar eget sociis adipiscing eget donec ultricies nibh tristique.'],
+];
+
+// The first showcase uses the text from the Figma design.
+$showcases[0]['description'] = 'A grand alpine panorama showcasing majestic, jagged mountain ridges catching the final blazing orange rays of a sunset. The deep, dark foreground of a dense evergreen forest wraps around the edges of a calm mountain lake, contrasting heavily with the fiery violet and gold clouds exploding across the sky.';
+
 // Fill in the details every showcase shares (change any of them per showcase above).
 foreach ($showcases as $i => $s) {
     $showcases[$i] += [
@@ -105,6 +115,7 @@ foreach ($showcases as $i => $s) {
         'location'    => 'Gallery location placeholder',
         'dates'       => 'Dates to be announced',
         'description' => 'Placeholder description for this showcase. Change this text in includes/data.php.',
+        'comments'    => $defaultComments,
     ];
 }
 

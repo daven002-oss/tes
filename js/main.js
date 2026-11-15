@@ -88,6 +88,15 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+    // ---------- Like buttons on comments ----------
+    document.querySelectorAll('.c-like').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var on = btn.getAttribute('aria-pressed') !== 'true';
+            btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+            btn.classList.toggle('liked', on);
+        });
+    });
+
     // ---------- Follow button on artist profile ----------
     document.querySelectorAll('[data-follow]').forEach(function (btn) {
         btn.addEventListener('click', function () {

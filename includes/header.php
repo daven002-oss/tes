@@ -63,7 +63,12 @@ $searchQuery  = isset($_GET['q']) && basename($_SERVER['SCRIPT_NAME']) === 'sear
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="7"/><line x1="15.8" y1="15.8" x2="21" y2="21"/></svg>
                 </button>
             </form>
-            <a class="btn-outline<?= $onLoginPage ? ' is-current' : '' ?>" href="login.php">Login</a>
+            <?php if (is_logged_in()): ?>
+                <!-- Logged in (switches on once the database sets $_SESSION['user_id']). Point href at the real profile page later. -->
+                <a class="btn-profile" href="#" aria-label="Your profile">Profile</a>
+            <?php else: ?>
+                <a class="btn-outline<?= $onLoginPage ? ' is-current' : '' ?>" href="login.php">Login</a>
+            <?php endif; ?>
         </div>
     </div>
 </header>

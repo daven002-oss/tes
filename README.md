@@ -32,7 +32,7 @@ Or copy the whole folder into Laragon/XAMPP `www`/`htdocs` and open `/<folder>/p
 | Artwork showcase | `showcase.php` | Artwork showcase |
 | Artspace Events | `events.php` | Artspace Events |
 | Artwork detail (one artwork) | `artwork-detail.php?id=N` | none |
-| Showcase detail (one showcase) | `showcase-detail.php?id=N` | none |
+| Showcase detail (one showcase, with comments) | `showcase-detail.php?id=N` | Artwork showcase |
 | Artist profile | `artist-profile.php?id=N` | none |
 | Event schedule | `event-schedule.php?id=N` | none |
 | Login / Sign up | `login.php`, `signup.php` | none |
@@ -59,3 +59,10 @@ Or copy the whole folder into Laragon/XAMPP `www`/`htdocs` and open `/<folder>/p
 - Home scroller / New picture -> `artwork-detail.php?id=N`. Showcase picture -> `showcase-detail.php?id=N`.
 - Artist row / Go to Profile -> `artist-profile.php?id=N`. Event Schedule button -> `event-schedule.php?id=N`.
 - Login page "Sign up" -> sign up page. Sign up page "Login" -> login page.
+
+## Logged in / logged out
+
+- `includes/auth.php` has `is_logged_in()`. It is always false for now (no database), so nobody can reach the logged-in view yet.
+- Logged in, the header shows a round **Profile** button instead of Login, and each showcase page gets a **Comment...** box.
+- When the database is ready, make `login.php` set `$_SESSION['user_id']` after a correct password and the logged-in view switches on by itself.
+- Comments shown now are placeholders: `$defaultComments` in `includes/data.php`.
