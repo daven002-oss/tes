@@ -47,6 +47,13 @@ require __DIR__ . '/../includes/header.php';
             <button class="btn" type="button">Contact owner</button>
         </div>
     </section>
+
+    <?php
+    // Every artwork gets the placeholder comments unless it has its own 'comments' list in data.php.
+    $comments      = $art['comments'] ?? $defaultComments;
+    $commentAction = 'artwork-detail.php?id=' . (int) $art['id'];
+    require __DIR__ . '/../includes/comments.php';
+    ?>
 <?php else: ?>
     <p class="empty-state">We couldn't find that artwork. <a href="new.php"><u>Back to New</u></a></p>
 <?php endif; ?>

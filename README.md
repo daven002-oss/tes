@@ -65,4 +65,5 @@ Or copy the whole folder into Laragon/XAMPP `www`/`htdocs` and open `/<folder>/p
 - `includes/auth.php` has `is_logged_in()`. It is always false for now (no database), so nobody can reach the logged-in view yet.
 - Logged in, the header shows a round **Profile** button instead of Login, and each showcase page gets a **Comment...** box.
 - When the database is ready, make `login.php` set `$_SESSION['user_id']` after a correct password and the logged-in view switches on by itself.
-- Comments shown now are placeholders: `$defaultComments` in `includes/data.php`.
+- Comments appear on every artwork page and every showcase page. The layout is shared in `includes/comments.php`.
+- Comments shown now are placeholders: `$defaultComments` in `includes/data.php` (add a `'comments'` list to one artwork or showcase to give it its own).
