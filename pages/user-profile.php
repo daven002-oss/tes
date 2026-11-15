@@ -14,17 +14,17 @@ require_once __DIR__ . '/../includes/init.php';
 //     exit;
 // }
 
-$user = current_user();
+// $user = current_user();
 
-$savedArtworks = array_filter($artworks, function ($a) use ($user) {
-    return in_array($a['id'], $user['saved'], true);
-});
-$followedArtists = array_filter($artists, function ($a) use ($user) {
-    return in_array($a['id'], $user['following'], true);
-});
-$scheduledEvents = array_filter($events, function ($e) use ($user) {
-    return in_array($e['id'], $user['scheduled'], true);
-});
+// $savedArtworks = array_filter($artworks, function ($a) use ($user) {
+//     return in_array($a['id'], $user['saved'], true);
+// });
+// $followedArtists = array_filter($artists, function ($a) use ($user) {
+//     return in_array($a['id'], $user['following'], true);
+// });
+// $scheduledEvents = array_filter($events, function ($e) use ($user) {
+//     return in_array($e['id'], $user['scheduled'], true);
+// });
 
 $pageTitle  = 'My profile';
 $activePage = '';
