@@ -38,6 +38,9 @@ Or copy the whole folder into Laragon/XAMPP `www`/`htdocs` and open `/<folder>/p
 | Login / Sign up | `login.php`, `signup.php` | none |
 | Search results | `search.php?q=...` | none |
 | About Us / Contact Us / Privacy & Policy | `about.php`, `contact.php`, `privacy.php` | none |
+| My profile (logged in only) | `user-profile.php` | none |
+| Admin Overview (admins only) | `admin.php` | none |
+| Log Out (button on My profile) | `logout.php` | none |
 
 ## Things you will want to change
 
@@ -62,8 +65,14 @@ Or copy the whole folder into Laragon/XAMPP `www`/`htdocs` and open `/<folder>/p
 
 ## Logged in / logged out
 
-- `includes/auth.php` has `is_logged_in()`. It is always false for now (no database), so nobody can reach the logged-in view yet.
-- Logged in, the header shows a round **Profile** button instead of Login, and each showcase page gets a **Comment...** box.
-- When the database is ready, make `login.php` set `$_SESSION['user_id']` after a correct password and the logged-in view switches on by itself.
-- Comments appear on every artwork page and every showcase page. The layout is shared in `includes/comments.php`.
-- Comments shown now are placeholders: `$defaultComments` in `includes/data.php` (add a `'comments'` list to one artwork or showcase to give it its own).
+- `includes/auth.php` has `is_logged_in()`, `is_admin()` and `current_user()`. Nobody can log in until the database exists, so for now the pages below can't be reached (they send you to the login page).
+- Logged in, the **Login** button becomes a round button with your profile picture (your initials if you have no picture). It opens **My profile** (`user-profile.php`).
+- My profile: normal users see **Log Out**. Admins also see **Admin Overview**.
+- Showcase and artwork pages get a **Comment...** box for logged-in visitors.
+- When the database is ready, make `login.php` set these after a correct password and everything switches on by itself:
+
+      $_SESSION['user_id']  = $userRow['id'];
+      $_SESSION['is_admin'] = (bool) $userRow['is_admin'];
+
+- The person's details (name, email, bio, saved artworks...) are placeholders in `current_user()` in `includes/auth.php`. Replace them with a database lookup. A profile picture is set with `'avatar' => 'images/users/name.jpg'`.
+- Comments appear on every artwork page and every showcase page. The layout is shared in `includes/comments.php`; the placeholder text is `$defaultComments` in `includes/data.php`.

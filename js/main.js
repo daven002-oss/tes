@@ -97,6 +97,35 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+    // ---------- My profile: tabs and Private/Public switch ----------
+    document.querySelectorAll('.tabs').forEach(function (tabs) {
+        var buttons = tabs.querySelectorAll('.tab');
+        buttons.forEach(function (tab) {
+            tab.addEventListener('click', function () {
+                buttons.forEach(function (t) {
+                    var on = t === tab;
+                    t.classList.toggle('active', on);
+                    t.setAttribute('aria-selected', on ? 'true' : 'false');
+                });
+                document.querySelectorAll('.tab-panel').forEach(function (panel) {
+                    panel.hidden = panel.getAttribute('data-panel') !== tab.getAttribute('data-tab');
+                });
+            });
+        });
+    });
+
+    document.querySelectorAll('.toggle').forEach(function (toggle) {
+        var options = toggle.querySelectorAll('button');
+        options.forEach(function (option) {
+            option.addEventListener('click', function () {
+                options.forEach(function (o) {
+                    o.classList.toggle('on', o === option);
+                    o.setAttribute('aria-pressed', o === option ? 'true' : 'false');
+                });
+            });
+        });
+    });
+
     // ---------- Follow button on artist profile ----------
     document.querySelectorAll('[data-follow]').forEach(function (btn) {
         btn.addEventListener('click', function () {

@@ -64,8 +64,8 @@ $searchQuery  = isset($_GET['q']) && basename($_SERVER['SCRIPT_NAME']) === 'sear
                 </button>
             </form>
             <?php if (is_logged_in()): ?>
-                <!-- Logged in (switches on once the database sets $_SESSION['user_id']). Point href at the real profile page later. -->
-                <a class="btn-profile" href="#" aria-label="Your profile">Profile</a>
+                <!-- Logged in: the Login button becomes a round button with your profile picture. -->
+                <a class="btn-profile" href="user-profile.php" aria-label="Your profile" title="Your profile"><?= avatar_html(current_user()) ?></a>
             <?php else: ?>
                 <a class="btn-outline<?= $onLoginPage ? ' is-current' : '' ?>" href="login.php">Login</a>
             <?php endif; ?>

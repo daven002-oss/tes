@@ -32,7 +32,7 @@ function render_image(string $src, string $alt = 'Image'): string
 }
 
 // Card used on the New page, search results and artist profiles.
-function art_card(array $art): void
+function art_card(array $art, bool $liked = false): void
 { ?>
     <article class="art-card">
         <a class="art-link" href="artwork-detail.php?id=<?= (int) $art['id'] ?>">
@@ -42,7 +42,7 @@ function art_card(array $art): void
                 <span>By : <?= e($art['artist']) ?></span>
             </div>
         </a>
-        <button class="heart" type="button" aria-pressed="false" aria-label="Like <?= e($art['title']) ?>">&#9825;</button>
+        <button class="heart<?= $liked ? ' liked' : '' ?>" type="button" aria-pressed="<?= $liked ? 'true' : 'false' ?>" aria-label="Like <?= e($art['title']) ?>"><?= $liked ? '&#9829;' : '&#9825;' ?></button>
     </article>
 <?php }
 
@@ -70,3 +70,18 @@ function mini_card(array $art, bool $hidden = false): void
         <span>By : <?= e($art['artist']) ?></span>
     </a>
 <?php }
+
+// A person's profile picture for small round buttons: their photo, or their initials if they have none.
+function avatar_html(array $user): string
+{
+    $src  = (string) ($user['avatar'] ?? '');
+    $file = dirname(__DIR__) . '/' . ltrim($src, '/');
+    if ($src !== '' && is_file($file)) {
+        return '<img src="../' . e(ltrim($src, '/')) . '" alt="">';
+    }
+    $initials = '';
+    foreach (array_slice(preg_split('/\s+/', trim($user['name'])), 0, 2) as $word) {
+        $initials .= strtoupper(substr($word, 0, 1));
+    }
+    return '<span class="avatar-initials" aria-hidden="true">' . e($initials) . '</span>';
+}
