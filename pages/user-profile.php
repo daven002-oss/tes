@@ -22,6 +22,9 @@ $savedArtworks = array_filter($artworks, function ($a) use ($user) {
 $followedArtists = array_filter($artists, function ($a) use ($user) {
     return in_array($a['id'], $user['following'], true);
 });
+$scheduledEvents = array_filter($events, function ($e) use ($user) {
+    return in_array($e['id'], $user['scheduled'], true);
+});
 
 $pageTitle  = 'My profile';
 $activePage = '';
@@ -48,7 +51,7 @@ require __DIR__ . '/../includes/header.php';
         <ul class="up-stats">
             <li><strong><?= count($savedArtworks) ?></strong><span>Saved artworks</span></li>
             <li><strong><?= count($followedArtists) ?></strong><span>Following</span></li>
-            <li><strong><?= count($user['collections']) ?></strong><span>Collections</span></li>
+            <li><strong><?= count($scheduledEvents) ?></strong><span>Scheduled events</span></li>
         </ul>
     </div>
 </section>
@@ -58,7 +61,7 @@ require __DIR__ . '/../includes/header.php';
         <div class="tabs" role="tablist">
             <button class="tab active" type="button" role="tab" aria-selected="true" data-tab="saved">Saved artworks <small><?= count($savedArtworks) ?></small></button>
             <button class="tab" type="button" role="tab" aria-selected="false" data-tab="following">Following</button>
-            <button class="tab" type="button" role="tab" aria-selected="false" data-tab="collections">Collections</button>
+            <button class="tab" type="button" role="tab" aria-selected="false" data-tab="scheduled">Scheduled events <small><?= count($scheduledEvents) ?></small></button>
         </div>
 
         <div class="tab-panel" data-panel="saved">
@@ -86,13 +89,23 @@ require __DIR__ . '/../includes/header.php';
             </ul>
         </div>
 
-        <div class="tab-panel" data-panel="collections" hidden>
-            <div class="panel-head"><p>Your collections.</p></div>
-            <ul class="result-list">
-                <?php foreach ($user['collections'] as $collection): ?>
-                    <li><?= e($collection) ?></li>
+        <div class="tab-panel" data-panel="scheduled" hidden>
+            <div class="panel-head"><p>Events you've scheduled.</p></div>
+            <?php if ($scheduledEvents): ?>
+                <?php foreach ($scheduledEvents as $event): ?>
+                    <article class="event-row">
+                        <div class="media r-169"><?= render_image($event['image'], $event['title']) ?></div>
+                        <div>
+                            <p class="location"><?= e($event['location']) ?></p>
+                            <h2><?= e($event['title']) ?></h2>
+                            <p class="desc"><?= e($event['description']) ?></p>
+                        </div>
+                        <a class="btn" href="event-schedule.php?id=<?= (int) $event['id'] ?>">Schedule</a>
+                    </article>
                 <?php endforeach; ?>
-            </ul>
+            <?php else: ?>
+                <p class="empty-state">You haven't scheduled any events yet.</p>
+            <?php endif; ?>
         </div>
     </div>
 

@@ -19,10 +19,10 @@ $heroSlides = [
 
 // ---------- Artists ----------
 $artists = [
-    ['id' => 1, 'name' => 'Makoto', 'joined' => '22/02/2019', 'followers' => 945, 'following' => 4, 'image' => ''],
-    ['id' => 2, 'name' => 'Se4r',   'joined' => '31/10/2019', 'followers' => 512, 'following' => 12, 'image' => ''],
-    ['id' => 3, 'name' => 'G1ORia', 'joined' => '06/12/2022', 'followers' => 230, 'following' => 31, 'image' => ''],
-    ['id' => 4, 'name' => 'D0ria',  'joined' => '04/01/2018', 'followers' => 1280, 'following' => 8, 'image' => ''],
+    ['id' => 1, 'name' => 'Makoto', 'joined' => '22/02/2019', 'followers' => 945, 'following' => 4, 'image' => 'images/artists/artist-1.png', 'profile_image' => 'images/profiles/profile-1.png'],
+    ['id' => 2, 'name' => 'Se4r',   'joined' => '31/10/2019', 'followers' => 512, 'following' => 12, 'image' => 'images/artists/artist-2.png', 'profile_image' => 'images/profiles/profile-2.png'],
+    ['id' => 3, 'name' => 'G1ORia', 'joined' => '06/12/2022', 'followers' => 230, 'following' => 31, 'image' => 'images/artists/artist-3.png', 'profile_image' => 'images/profiles/profile-3.png'],
+    ['id' => 4, 'name' => 'D0ria',  'joined' => '04/01/2018', 'followers' => 1280, 'following' => 8, 'image' => 'images/artists/artist-4.png', 'profile_image' => 'images/profiles/profile-4.png'],
 ];
 
 // ---------- Artworks ----------
@@ -51,23 +51,24 @@ function make_art(int $id, string $section, string $title, string $artist, ?int 
 
 $artworks = [
     // Home page - Curated Selection
-    make_art(1,  'curated', 'floweR-mAN',    'Slnae'),
-    make_art(2,  'curated', 'The phandom',   'venglish viera'),
-    make_art(3,  'curated', 'Vangush',       'D0ria', 4, ['price' => '$10,000 USD', 'year' => '1999 - 2009']),
-    make_art(4,  'curated', 'St mount',      'maldini zidane'),
-    make_art(5,  'curated', 'Monolith',      'Gattuso'),
-    make_art(6,  'curated', 'Ephemeral',     'chandra'),
+    make_art(1,  'curated', 'floweR-mAN',    'Slnae',          null, ['image' => 'images/home/home-1.png']),
+    make_art(2,  'curated', 'The phandom',   'venglish viera', null, ['image' => 'images/home/home-2.png']),
+    make_art(3,  'curated', 'Vangush',       'D0ria', 4, ['image' => 'images/home/home-3.png', 'price' => '$10,000 USD', 'year' => '1999 - 2009']),
+    make_art(4,  'curated', 'St mount',      'maldini zidane', null, ['image' => 'images/home/home-4.png']),
+    make_art(5,  'curated', 'Monolith',      'Gattuso',        null, ['image' => 'images/home/home-5.png']),
+    make_art(6,  'curated', 'Ephemeral',     'chandra',        null, ['image' => 'images/home/home-6.png']),
+    make_art(16, 'curated', 'Artwork Title', 'Artist name',    null, ['image' => 'images/home/home-7.png']),   // 7th picture - give it its real title
 
     // New page
-    make_art(7,  'new', 'Golden lake',   'makoto', 1),
-    make_art(8,  'new', 'Messiah',       'ewwiieess'),
-    make_art(9,  'new', 'Cliffs',        'jeomin1101'),
-    make_art(10, 'new', 'Acacia',        'thuglifebees'),
-    make_art(11, 'new', 'Mount',         'frede'),
-    make_art(12, 'new', 'Green Hills',   'wen chai fa'),
-    make_art(13, 'new', 'Grey Hills',    'martin'),
-    make_art(14, 'new', 'Green Pasture', 'erviana'),
-    make_art(15, 'new', 'Dusk Mountain', 'awang'),
+    make_art(7,  'new', 'Golden lake',   'makoto', 1, ['image' => 'images/new/new-1.png']),
+    make_art(8,  'new', 'Messiah',       'ewwiieess',    null, ['image' => 'images/new/new-2.png']),
+    make_art(9,  'new', 'Cliffs',        'jeomin1101',   null, ['image' => 'images/new/new-3.png']),
+    make_art(10, 'new', 'Acacia',        'thuglifebees', null, ['image' => 'images/new/new-4.png']),
+    make_art(11, 'new', 'Mount',         'frede',        null, ['image' => 'images/new/new-5.png']),
+    make_art(12, 'new', 'Green Hills',   'wen chai fa',  null, ['image' => 'images/new/new-6.png']),
+    make_art(13, 'new', 'Grey Hills',    'martin',       null, ['image' => 'images/new/new-7.png']),
+    make_art(14, 'new', 'Green Pasture', 'erviana',      null, ['image' => 'images/new/new-8.png']),
+    make_art(15, 'new', 'Dusk Mountain', 'awang',        null, ['image' => 'images/new/new-9.png']),
 ];
 
 // Make sure every artist profile has 3 placeholder artworks to show.
@@ -81,7 +82,9 @@ foreach ($artists as $a) {
         }
     }
     while ($count < 3) {
-        $artworks[] = make_art($placeholderId++, 'profile', 'Artwork Title', $a['name'], $a['id']);
+        // pictures: images/profile-artworks/profile-artwork-1.png ... -3.png, used in turn
+        $pic = 'images/profile-artworks/profile-artwork-' . ($count + 1) . '.png';
+        $artworks[] = make_art($placeholderId++, 'profile', 'Artwork Title', $a['name'], $a['id'], ['image' => $pic]);
         $count++;
     }
 }
@@ -111,7 +114,7 @@ $showcases[0]['description'] = 'A grand alpine panorama showcasing majestic, jag
 // Fill in the details every showcase shares (change any of them per showcase above).
 foreach ($showcases as $i => $s) {
     $showcases[$i] += [
-        'image'       => '',
+        'image'       => 'images/showcase/showcase-' . $s['id'] . '.png',
         'location'    => 'Gallery location placeholder',
         'dates'       => 'Dates to be announced',
         'description' => 'Placeholder description for this showcase. Change this text in includes/data.php.',
@@ -121,7 +124,7 @@ foreach ($showcases as $i => $s) {
 
 // ---------- Artspace events ----------
 $events = [
-    ['id' => 1, 'location' => 'New Zealand', 'title' => 'Endless Pastures', 'image' => '', 'date' => 'Date to be announced', 'time' => 'Time to be announced', 'venue' => 'Venue placeholder', 'description' => 'A sweeping landscape seemingly endless rows of beautifully drawn and painted art.'],
-    ['id' => 2, 'location' => 'London', 'title' => 'St. Mary River', 'image' => '', 'date' => 'Date to be announced', 'time' => 'Time to be announced', 'venue' => 'Venue placeholder', 'description' => 'A grand alpine panorama showcasing majestic, jagged mountain ridges mirrored in a calm river.'],
-    ['id' => 3, 'location' => 'City name', 'title' => 'Event Title 3', 'image' => '', 'date' => 'Date to be announced', 'time' => 'Time to be announced', 'venue' => 'Venue placeholder', 'description' => 'Placeholder description for the third event. Change this text in includes/data.php.'],
+    ['id' => 1, 'location' => 'New Zealand', 'title' => 'Endless Pastures', 'image' => 'images/events/event-1.png', 'date' => 'Date to be announced', 'time' => 'Time to be announced', 'venue' => 'Venue placeholder', 'description' => 'A sweeping landscape seemingly endless rows of beautifully drawn and painted art.'],
+    ['id' => 2, 'location' => 'London', 'title' => 'St. Mary River', 'image' => 'images/events/event-2.png', 'date' => 'Date to be announced', 'time' => 'Time to be announced', 'venue' => 'Venue placeholder', 'description' => 'A grand alpine panorama showcasing majestic, jagged mountain ridges mirrored in a calm river.'],
+    ['id' => 3, 'location' => 'City name', 'title' => 'Event Title 3', 'image' => 'images/events/event-3.png', 'date' => 'Date to be announced', 'time' => 'Time to be announced', 'venue' => 'Venue placeholder', 'description' => 'Placeholder description for the third event. Change this text in includes/data.php.'],
 ];

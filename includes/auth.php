@@ -32,7 +32,8 @@ function is_admin(): bool
  * PLACEHOLDER DATA: when the database exists, replace the array below with a lookup of
  * the user whose id is $_SESSION['user_id'].
  * 'avatar' => ''  shows the person's initials; put a picture path like 'images/users/alya.jpg' to show a photo.
- * 'saved' = ids of saved artworks, 'following' = ids of followed artists (see includes/data.php).
+ * 'saved' = ids of saved artworks, 'following' = ids of followed artists,
+ * 'scheduled' = ids of events the person scheduled (see includes/data.php).
  */
 function current_user(): ?array
 {
@@ -48,10 +49,10 @@ function current_user(): ?array
         'location'    => 'Jakarta, Indonesia',
         'joined'      => 'November 2026',
         'email'       => 'alya.putri@gmail.com',
-        'avatar'      => '',
+        'avatar'      => 'images/profiles/profile-1.png',
         'is_admin'    => is_admin(),
         'saved'       => [7, 8, 9],
         'following'   => [1, 2, 3, 4],
-        'collections' => ['Landscapes', 'Favourites'],
+        'scheduled'   => [1, 2],
     ];
 }

@@ -19,7 +19,7 @@ Or copy the whole folder into Laragon/XAMPP `www`/`htdocs` and open `/<folder>/p
 | `includes/` | Shared header and footer, settings (`config.php`), content (`data.php`), helpers (`functions.php`) |
 | `css/` | `style.css` |
 | `js/` | `main.js` (hero slider, header search, like buttons, follow button) |
-| `images/` | Put real pictures here. `images/placeholder/` is spare |
+| `images/` | The pictures: `artists/`, `profiles/`, `home/`, `new/`, `showcase/`, `events/`, `profile-artworks/`. Their paths are set in `includes/data.php` |
 | `database/` | Empty - reserved for the database later |
 
 ## Pages
@@ -68,6 +68,7 @@ Or copy the whole folder into Laragon/XAMPP `www`/`htdocs` and open `/<folder>/p
 - `includes/auth.php` has `is_logged_in()`, `is_admin()` and `current_user()`. Nobody can log in until the database exists, so for now the pages below can't be reached (they send you to the login page).
 - Logged in, the **Login** button becomes a round button with your profile picture (your initials if you have no picture). It opens **My profile** (`user-profile.php`).
 - My profile: normal users see **Log Out**. Admins also see **Admin Overview**.
+- My profile has tabs: Saved artworks, Following and **Scheduled events** (the events the person scheduled; `'scheduled'` in `current_user()`).
 - Showcase and artwork pages get a **Comment...** box for logged-in visitors.
 - When the database is ready, make `login.php` set these after a correct password and everything switches on by itself:
 

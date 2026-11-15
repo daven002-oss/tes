@@ -28,7 +28,7 @@ require __DIR__ . '/../includes/header.php';
     });
     ?>
     <section class="profile-head">
-        <div class="media r-34"><?= render_image($artist['image'], $artist['name']) ?></div>
+        <div class="media r-34"><?= render_image($artist['profile_image'] ?? $artist['image'], $artist['name']) ?></div>
 
         <div class="profile-info">
             <div class="profile-tools">
