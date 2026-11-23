@@ -9,6 +9,9 @@ require_once __DIR__ . '/../includes/init.php';
 
 $id  = isset($_GET['id']) ? (int) $_GET['id'] : 1;
 $art = find_by_id($artworks, $id);
+if ($art) {
+    handle_comment_post('artwork', (int) $art['id']);   // saves a new comment, if one was just sent
+}
 
 if (!$art) {
     http_response_code(404);
@@ -49,8 +52,7 @@ require __DIR__ . '/../includes/header.php';
     </section>
 
     <?php
-    // Every artwork gets the placeholder comments unless it has its own 'comments' list in data.php.
-    $comments      = $art['comments'] ?? $defaultComments;
+    $comments      = get_comments('artwork', (int) $art['id']);
     $commentAction = 'artwork-detail.php?id=' . (int) $art['id'];
     require __DIR__ . '/../includes/comments.php';
     ?>

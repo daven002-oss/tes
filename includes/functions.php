@@ -32,8 +32,9 @@ function render_image(string $src, string $alt = 'Image'): string
 }
 
 // Card used on the New page, search results and artist profiles.
-function art_card(array $art, bool $liked = false): void
-{ ?>
+function art_card(array $art, ?bool $liked = null): void
+{
+    $liked = $liked ?? is_saved('artwork', (int) $art['id']); ?>
     <article class="art-card">
         <a class="art-link" href="artwork-detail.php?id=<?= (int) $art['id'] ?>">
             <div class="media r-53"><?= render_image($art['image'], $art['title']) ?></div>
@@ -42,13 +43,14 @@ function art_card(array $art, bool $liked = false): void
                 <span>By : <?= e($art['artist']) ?></span>
             </div>
         </a>
-        <button class="heart<?= $liked ? ' liked' : '' ?>" type="button" aria-pressed="<?= $liked ? 'true' : 'false' ?>" aria-label="Like <?= e($art['title']) ?>"><?= $liked ? '&#9829;' : '&#9825;' ?></button>
+        <button class="heart<?= $liked ? ' liked' : '' ?>" type="button" data-like="artwork" data-id="<?= (int) $art['id'] ?>" aria-pressed="<?= $liked ? 'true' : 'false' ?>" aria-label="Save <?= e($art['title']) ?>"><?= $liked ? '&#9829;' : '&#9825;' ?></button>
     </article>
 <?php }
 
 // Card used on the Artwork showcase page.
-function showcase_card(array $show): void
-{ ?>
+function showcase_card(array $show, ?bool $liked = null): void
+{
+    $liked = $liked ?? is_saved('showcase', (int) $show['id']); ?>
     <article class="art-card">
         <a class="art-link" href="showcase-detail.php?id=<?= (int) $show['id'] ?>">
             <div class="media r-53"><?= render_image($show['image'], $show['title']) ?></div>
@@ -57,7 +59,7 @@ function showcase_card(array $show): void
                 <span>By : <?= e($show['by']) ?></span>
             </div>
         </a>
-        <button class="heart" type="button" aria-pressed="false" aria-label="Like <?= e($show['title']) ?>">&#9825;</button>
+        <button class="heart<?= $liked ? ' liked' : '' ?>" type="button" data-like="showcase" data-id="<?= (int) $show['id'] ?>" aria-pressed="<?= $liked ? 'true' : 'false' ?>" aria-label="Save <?= e($show['title']) ?>"><?= $liked ? '&#9829;' : '&#9825;' ?></button>
     </article>
 <?php }
 
@@ -84,4 +86,70 @@ function avatar_html(array $user): string
         $initials .= strtoupper(substr($word, 0, 1));
     }
     return '<span class="avatar-initials" aria-hidden="true">' . e($initials) . '</span>';
+}
+
+// ---------- What the logged-in person saved ----------
+// $type: 'artwork' (liked), 'showcase' (liked), 'artist' (followed), 'event' (scheduled)
+function is_saved(string $type, int $id): bool
+{
+    $user = current_user();
+    if ($user === null) {
+        return false;
+    }
+    $key = ['artwork' => 'saved', 'showcase' => 'saved_showcases', 'artist' => 'following', 'event' => 'scheduled'][$type] ?? null;
+    return $key !== null && in_array($id, $user[$key], true);
+}
+
+// Pick items out of a list (artworks, artists...) in the order of $ids.
+function pick_by_ids(array $items, array $ids): array
+{
+    $out = [];
+    foreach ($ids as $id) {
+        $item = find_by_id($items, $id);
+        if ($item !== null) {
+            $out[] = $item;
+        }
+    }
+    return $out;
+}
+
+// ---------- Comments (under an artwork or a showcase) ----------
+// $type: 'artwork' or 'showcase'
+function get_comments(string $type, int $id): array
+{
+    $column = $type === 'showcase' ? 'showcase_id' : 'artwork_id';
+    $stmt = db()->prepare(
+        "SELECT u.display_name AS name, c.created_at, c.body
+           FROM comments c JOIN users u ON u.id = c.user_id
+          WHERE c.$column = ?
+          ORDER BY c.created_at, c.id"
+    );
+    $stmt->execute([$id]);
+    $out = [];
+    foreach ($stmt->fetchAll() as $r) {
+        $out[] = ['name' => $r['name'], 'date' => date('M j, Y', strtotime($r['created_at'])), 'text' => $r['body']];
+    }
+    return $out;
+}
+
+// Call this near the top of a page that shows comments. If a comment was just posted,
+// it saves it and reloads the page (so refreshing does not post it twice).
+function handle_comment_post(string $type, int $id): void
+{
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['comment'])) {
+        return;
+    }
+    $user = current_user();
+    $body = trim((string) $_POST['comment']);
+    if ($user !== null && csrf_valid($_POST['csrf'] ?? null) && $body !== '' && mb_strlen($body) <= 1000) {
+        $column = $type === 'showcase' ? 'showcase_id' : 'artwork_id';
+        $stmt = db()->prepare("INSERT INTO comments (user_id, $column, body) VALUES (?, ?, ?)");
+        try {
+            $stmt->execute([$user['id'], $id, $body]);
+        } catch (PDOException $e) {
+            // the artwork/showcase does not exist: ignore
+        }
+    }
+    header('Location: ' . strtok($_SERVER['REQUEST_URI'], '#') . '#comments-title');
+    exit;
 }

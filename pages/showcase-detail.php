@@ -4,8 +4,7 @@
  * Every picture on the Artwork showcase page opens this page.
  *
  *  - Not logged in: picture, title, artist, description and the comments (read only).
- *  - Logged in:     the same, plus a "Comment..." box and a Profile button in the header.
- *                   Nobody can be logged in until the database exists (see includes/auth.php).
+ *  - Logged in:     the same, plus a "Comment..." box (comments are saved in the database).
  *
  * Change the words and picture of a showcase in $showcases in includes/data.php.
  */
@@ -13,6 +12,9 @@ require_once __DIR__ . '/../includes/init.php';
 
 $id   = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 $show = find_by_id($showcases, $id);
+if ($show) {
+    handle_comment_post('showcase', (int) $show['id']);   // saves a new comment, if one was just sent
+}
 
 if (!$show) {
     http_response_code(404);
@@ -30,13 +32,13 @@ require __DIR__ . '/../includes/header.php';
 
             <div class="sv-info">
                 <h1><?= e($show['title']) ?></h1>
-                <p class="sv-by">By : <?= e($show['by']) ?></p>
+                <p class="sv-by">By : <a href="artist-profile.php?id=<?= (int) $show['artist_id'] ?>"><?= e($show['by']) ?></a></p>
                 <p class="sv-desc"><?= e($show['description']) ?></p>
             </div>
         </div>
 
         <?php
-        $comments      = $show['comments'];
+        $comments      = get_comments('showcase', (int) $show['id']);
         $commentAction = 'showcase-detail.php?id=' . (int) $show['id'];
         require __DIR__ . '/../includes/comments.php';
         ?>

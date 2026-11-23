@@ -635,3 +635,10 @@ main {
     .up-card { grid-template-columns: 1fr; }
     .tab { padding: 10px 8px; font-size: .8rem; }
 }
+
+/* ---------- Messages, comments, saved-state buttons ---------- */
+.notice.error { background: #fde2e2; color: #7a1010; }
+.no-comments, .comment-login { margin: 4px 0 12px; font-size: .8rem; color: #555; }
+.comment-login a { font-weight: 600; }
+.btn.following, .btn.scheduled { background: #fff; color: #111; border: 1.5px solid #111; }
+.btn.following:hover, .btn.scheduled:hover { background: #111; color: #fff; }

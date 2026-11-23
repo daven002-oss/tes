@@ -77,14 +77,75 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // ---------- Heart (like) buttons ----------
-    document.querySelectorAll('.heart').forEach(function (btn) {
+    // ---------- Buttons that save things (heart, Follow, Schedule, Private/Public) ----------
+    // They talk to pages/api.php. Not logged in? You are sent to the login page.
+    var csrfMeta = document.querySelector('meta[name="csrf-token"]');
+
+    function callApi(payload) {
+        return fetch('api.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfMeta ? csrfMeta.content : '' },
+            body: JSON.stringify(payload)
+        }).then(function (response) {
+            if (response.status === 401) {
+                window.location.href = 'login.php';
+                return null;
+            }
+            return response.json();
+        });
+    }
+
+    // Heart on an artwork / showcase  ->  "Saved artworks" on your profile
+    document.querySelectorAll('.heart[data-like]').forEach(function (btn) {
         btn.addEventListener('click', function (event) {
             event.preventDefault();
-            var on = btn.getAttribute('aria-pressed') !== 'true';
-            btn.setAttribute('aria-pressed', on ? 'true' : 'false');
-            btn.classList.toggle('liked', on);
-            btn.innerHTML = on ? '&#9829;' : '&#9825;';
+            btn.disabled = true;
+            callApi({ action: 'toggle_like', type: btn.getAttribute('data-like'), id: Number(btn.getAttribute('data-id')) })
+                .then(function (data) {
+                    if (data && data.ok) {
+                        btn.setAttribute('aria-pressed', data.on ? 'true' : 'false');
+                        btn.classList.toggle('liked', data.on);
+                        btn.innerHTML = data.on ? '&#9829;' : '&#9825;';
+                    }
+                })
+                .catch(function () {})
+                .then(function () { btn.disabled = false; });
+        });
+    });
+
+    // Follow button on an artist profile  ->  "Following" on your profile
+    document.querySelectorAll('[data-follow-artist]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            btn.disabled = true;
+            callApi({ action: 'toggle_follow', id: Number(btn.getAttribute('data-follow-artist')) })
+                .then(function (data) {
+                    if (data && data.ok) {
+                        btn.classList.toggle('following', data.on);
+                        btn.setAttribute('aria-pressed', data.on ? 'true' : 'false');
+                        btn.textContent = data.on ? 'Following' : 'Follow';
+                        var count = document.querySelector('[data-followers]');
+                        if (count) count.textContent = data.followers;
+                    }
+                })
+                .catch(function () {})
+                .then(function () { btn.disabled = false; });
+        });
+    });
+
+    // Schedule button on an event  ->  "Scheduled events" on your profile
+    document.querySelectorAll('[data-schedule]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            btn.disabled = true;
+            callApi({ action: 'toggle_schedule', id: Number(btn.getAttribute('data-schedule')) })
+                .then(function (data) {
+                    if (data && data.ok) {
+                        btn.classList.toggle('scheduled', data.on);
+                        btn.setAttribute('aria-pressed', data.on ? 'true' : 'false');
+                        btn.innerHTML = data.on ? 'Scheduled &#10003;' : 'Schedule';
+                    }
+                })
+                .catch(function () {})
+                .then(function () { btn.disabled = false; });
         });
     });
 
@@ -122,15 +183,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     o.classList.toggle('on', o === option);
                     o.setAttribute('aria-pressed', o === option ? 'true' : 'false');
                 });
+                if (option.hasAttribute('data-visibility')) {
+                    callApi({ action: 'set_visibility', value: option.getAttribute('data-visibility') });
+                }
             });
-        });
-    });
-
-    // ---------- Follow button on artist profile ----------
-    document.querySelectorAll('[data-follow]').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-            var on = btn.classList.toggle('following');
-            btn.textContent = on ? 'Following' : 'Follow';
         });
     });
 });

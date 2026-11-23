@@ -7,11 +7,15 @@
  *   $commentAction - the page address the comment box posts to
  *
  * Not logged in: the comments are read only.
- * Logged in:     a "Comment..." box appears too (is_logged_in() is false until the database exists).
+ * Logged in:     a "Comment..." box appears too (comments are saved in the `comments` table).
  */
 ?>
 <section class="comments" aria-labelledby="comments-title">
     <h2 id="comments-title">Comments</h2>
+
+    <?php if (!$comments): ?>
+        <p class="no-comments">No comments yet.</p>
+    <?php endif; ?>
 
     <?php foreach ($comments as $comment): ?>
         <article class="comment">
@@ -32,9 +36,12 @@
     <?php endforeach; ?>
 
     <?php if (is_logged_in()): ?>
-        <!-- Only logged-in visitors see the comment box. Saving the comment needs the database. -->
+        <!-- Only logged-in visitors see the comment box. Press Enter to post. -->
         <form class="comment-form" method="post" action="<?= e($commentAction) ?>">
-            <input type="text" name="comment" placeholder="Comment..." aria-label="Write a comment" autocomplete="off">
+            <?= csrf_field() ?>
+            <input type="text" name="comment" placeholder="Comment..." aria-label="Write a comment" maxlength="1000" autocomplete="off" required>
         </form>
+    <?php else: ?>
+        <p class="comment-login"><a href="login.php"><u>Log in</u></a> to leave a comment.</p>
     <?php endif; ?>
 </section>

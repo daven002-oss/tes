@@ -38,7 +38,7 @@ require __DIR__ . '/../includes/header.php';
             <h2><?= e($artist['name']) ?></h2>
             <p class="meta">
                 Joined <?= e($artist['joined']) ?><br>
-                <?= (int) $artist['followers'] ?> followers &bull; <?= (int) $artist['following'] ?> following
+                <span data-followers><?= (int) $artist['followers'] ?></span> followers
             </p>
             <div class="socials">
                 <a href="#" class="social-dot" aria-label="Instagram">IG</a>
@@ -46,7 +46,8 @@ require __DIR__ . '/../includes/header.php';
                 <a href="#" class="social-dot" aria-label="Facebook">FB</a>
                 <a href="#" class="social-dot" aria-label="X">X</a>
             </div>
-            <button class="btn" type="button" data-follow>Follow</button>
+            <?php $following = is_saved('artist', (int) $artist['id']); ?>
+            <button class="btn<?= $following ? ' following' : '' ?>" type="button" data-follow-artist="<?= (int) $artist['id'] ?>" aria-pressed="<?= $following ? 'true' : 'false' ?>"><?= $following ? 'Following' : 'Follow' ?></button>
         </div>
     </section>
 

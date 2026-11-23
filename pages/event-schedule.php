@@ -29,7 +29,8 @@ require __DIR__ . '/../includes/header.php';
             <h2><?= e($event['title']) ?></h2>
             <p class="desc"><?= e($event['description']) ?></p>
         </div>
-        <button class="btn" type="button">Schedule</button>
+        <?php $scheduled = is_saved('event', (int) $event['id']); ?>
+        <button class="btn<?= $scheduled ? ' scheduled' : '' ?>" type="button" data-schedule="<?= (int) $event['id'] ?>" aria-pressed="<?= $scheduled ? 'true' : 'false' ?>"><?= $scheduled ? 'Scheduled &#10003;' : 'Schedule' ?></button>
     </article>
 
     <section class="schedule-box">

@@ -1,8 +1,7 @@
 <?php
 /*
  * "My profile" page - opened from the round profile-picture button in the header.
- * Only for logged-in visitors (nobody can be logged in until the database exists,
- * so for now this page sends everyone to the login page).
+ * Only for logged-in visitors (others are sent to the login page).
  *
  * Normal users see Log Out. Admins also see an "Admin Overview" button.
  * The person's details come from current_user() in includes/auth.php.
@@ -16,15 +15,12 @@ if (!is_logged_in()) {
 
 $user = current_user();
 
-$savedArtworks = array_filter($artworks, function ($a) use ($user) {
-    return in_array($a['id'], $user['saved'], true);
-});
-$followedArtists = array_filter($artists, function ($a) use ($user) {
-    return in_array($a['id'], $user['following'], true);
-});
-$scheduledEvents = array_filter($events, function ($e) use ($user) {
-    return in_array($e['id'], $user['scheduled'], true);
-});
+// Everything below is what this person saved, newest first (see the *_likes / artist_follows / event_schedules tables).
+$savedArtworks   = pick_by_ids($artworks, $user['saved']);
+$savedShowcases  = pick_by_ids($showcases, $user['saved_showcases']);
+$savedCount      = count($savedArtworks) + count($savedShowcases);
+$followedArtists = pick_by_ids($artists, $user['following']);
+$scheduledEvents = pick_by_ids($events, $user['scheduled']);
 
 $pageTitle  = 'My profile';
 $activePage = '';
@@ -49,7 +45,7 @@ require __DIR__ . '/../includes/header.php';
     <div class="up-side-top">
         <a class="btn-pill" href="#" title="Editing needs the database">Edit profile</a>
         <ul class="up-stats">
-            <li><strong><?= count($savedArtworks) ?></strong><span>Saved artworks</span></li>
+            <li><strong><?= $savedCount ?></strong><span>Saved artworks</span></li>
             <li><strong><?= count($followedArtists) ?></strong><span>Following</span></li>
             <li><strong><?= count($scheduledEvents) ?></strong><span>Scheduled events</span></li>
         </ul>
@@ -59,7 +55,7 @@ require __DIR__ . '/../includes/header.php';
 <div class="up-layout">
     <div class="up-main">
         <div class="tabs" role="tablist">
-            <button class="tab active" type="button" role="tab" aria-selected="true" data-tab="saved">Saved artworks <small><?= count($savedArtworks) ?></small></button>
+            <button class="tab active" type="button" role="tab" aria-selected="true" data-tab="saved">Saved artworks <small><?= $savedCount ?></small></button>
             <button class="tab" type="button" role="tab" aria-selected="false" data-tab="following">Following</button>
             <button class="tab" type="button" role="tab" aria-selected="false" data-tab="scheduled">Scheduled events <small><?= count($scheduledEvents) ?></small></button>
         </div>
@@ -69,10 +65,13 @@ require __DIR__ . '/../includes/header.php';
                 <p>A little inspiration, saved for later.</p>
                 <span>Recently saved</span>
             </div>
-            <?php if ($savedArtworks): ?>
+            <?php if ($savedCount): ?>
                 <div class="grid-3 up-grid">
                     <?php foreach ($savedArtworks as $art): ?>
                         <?php art_card($art, true); ?>
+                    <?php endforeach; ?>
+                    <?php foreach ($savedShowcases as $show): ?>
+                        <?php showcase_card($show, true); ?>
                     <?php endforeach; ?>
                 </div>
             <?php else: ?>
@@ -112,8 +111,8 @@ require __DIR__ . '/../includes/header.php';
     <aside class="up-side">
         <h3>Account details</h3>
         <div class="toggle" role="group" aria-label="Profile visibility">
-            <button class="on" type="button" aria-pressed="true">Private</button>
-            <button type="button" aria-pressed="false">Public</button>
+            <button type="button" data-visibility="private" class="<?= $user['visibility'] === 'private' ? 'on' : '' ?>" aria-pressed="<?= $user['visibility'] === 'private' ? 'true' : 'false' ?>">Private</button>
+            <button type="button" data-visibility="public" class="<?= $user['visibility'] === 'public' ? 'on' : '' ?>" aria-pressed="<?= $user['visibility'] === 'public' ? 'true' : 'false' ?>">Public</button>
         </div>
 
         <dl class="up-details">
@@ -126,6 +125,7 @@ require __DIR__ . '/../includes/header.php';
         <h3 class="settings-title">Account settings</h3>
         <div class="up-actions<?= is_admin() ? '' : ' solo' ?>">
             <form method="post" action="logout.php">
+                <?= csrf_field() ?>
                 <button class="btn-logout" type="submit">Log Out</button>
             </form>
             <?php if (is_admin()): ?>

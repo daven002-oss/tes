@@ -10,7 +10,7 @@ require __DIR__ . '/../includes/header.php';
 </div>
 
 <section class="row-list">
-    <?php foreach ($artists as $artist): ?>
+    <?php foreach (array_filter($artists, function ($a) { return $a['featured']; }) as $artist): ?>
         <?php $profileUrl = 'artist-profile.php?id=' . (int) $artist['id']; ?>
         <article class="artist-row">
             <a href="<?= e($profileUrl) ?>" class="media r-11" aria-label="Open <?= e($artist['name']) ?>'s profile">
