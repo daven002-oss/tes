@@ -6,7 +6,7 @@
  */
 return [
     'host' => '127.0.0.1',
-    'port' => 3001,
+    'port' => 3306,
     'name' => 'vela_artspace',
     'user' => 'root',
     'pass' => '',
