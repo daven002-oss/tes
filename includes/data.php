@@ -41,6 +41,7 @@ foreach ($rows as $r) {
 }
 
 // ---------- Artworks ----------
+// Only 'published' artworks are loaded here (drafts and artworks in review are not public).
 // section 'curated' = Home page scroller, 'new' = New page. Every artwork has an artist.
 $artworks = [];
 $rows = $pdo->query(
@@ -48,6 +49,7 @@ $rows = $pdo->query(
        FROM artworks w
        JOIN artists a ON a.id = w.artist_id
        LEFT JOIN pictures pic ON pic.owner_type = 'artwork' AND pic.owner_id = w.id
+      WHERE w.status = 'published'
       ORDER BY w.id"
 )->fetchAll();
 foreach ($rows as $r) {

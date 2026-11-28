@@ -13,6 +13,8 @@ PHP + HTML + CSS + JavaScript site with a MySQL database (Laragon / phpMyAdmin).
 If your MySQL uses another user, password or port, change `includes/db_config.php`.
 Without phpMyAdmin you can also run `php database/install.php` from this folder.
 
+**Already imported Vela artspace#7?** Either import `vela_artspace.sql` again (starts fresh, erases your data), or keep your data and run `database/upgrade_from_7.sql` once (phpMyAdmin -> `vela_artspace` -> Import).
+
 Demo logins (change or delete them before the site goes online):
 
 | Account | Email | Password |
@@ -87,6 +89,25 @@ New people can register on the Sign up page.
 - Artist row / Go to Profile -> `artist-profile.php?id=N`. Event Schedule button -> `event-schedule.php?id=N`.
 - Login page "Sign up" -> sign up page. Sign up page "Login" -> login page.
 
+## Profile: Edit profile and post artworks
+
+- **Edit profile** opens a popup to change your profile picture and username.
+- **My artworks** tab -> **Post artwork** (picture, title, medium, size, year, description). New artworks are `in_review` and only show on the New page after an admin approves them (admins publish straight away). Every posted artwork gets the poster as its artist (an artist profile is made on the first post).
+- Uploaded pictures are saved in `images/uploads/`. The same picture (checked by file content, `pictures.file_hash`) can't be uploaded twice. Max 5 MB; if bigger files fail, raise `upload_max_filesize` / `post_max_size` in php.ini.
+- Changes requested by an admin move an artwork to **Draft**; press **Send for review** to resubmit.
+
+## Admin Space (admins only: `admin.php`)
+
+| Page | What it does |
+|---|---|
+| Overview (`admin.php`) | Totals (artworks, users, events, awaiting review), recent artworks with a red **Delete** (asks "Are you sure?"), gallery activity |
+| All artworks (`admin-artworks.php`) | Every artwork, with Delete |
+| Users (`admin-users.php`) | Username, Joined at, Status (Admin/User), Action (Delete). **Only `admin@vela.test`** can make someone an admin or a normal user, or delete another admin. Change that account in `includes/config.php` (`SUPER_ADMIN_EMAIL`) |
+| Review Submissions (`admin-review.php`) | Awaiting review / Published / Drafts, one submission at a time: **Approve & publish** or **Request changes** |
+| Messages (`admin-messages.php`) | Inbox, reply, Ignore, Mark all as read |
+
+All admin buttons post to `admin-action.php`, which checks who is allowed, so the rules can't be skipped by editing the page.
+
 ## Logged in / logged out
 
 - Log in on `login.php` (or sign up on `signup.php`). `includes/auth.php` has `is_logged_in()`, `is_admin()` and `current_user()`, all read from the `users` table.
@@ -94,4 +115,4 @@ New people can register on the Sign up page.
 - My profile: tabs for **Saved artworks**, **Following** and **Scheduled events**. Normal users see **Log Out**; admins (`is_admin = 1`) also see **Admin Overview**.
 - Not logged in, pressing a heart / Follow / Schedule button sends you to the login page.
 - Showcase and artwork pages get a **Comment...** box for logged-in visitors.
-- Still to do: the "Edit profile" button and "Forgot password?" link do nothing yet.
+- Still to do: the "Forgot password?" link does nothing yet.

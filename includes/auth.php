@@ -75,6 +75,7 @@ function current_user(): ?array
         'avatar'          => (string) $row['avatar_path'],
         'is_admin'        => (bool) $row['is_admin'],
         'visibility'      => $row['profile_visibility'],
+        'artist_id'       => $row['artist_id'] === null ? null : (int) $row['artist_id'],
         'saved'           => $ids('SELECT artwork_id  FROM artwork_likes   WHERE user_id = ? ORDER BY created_at DESC, artwork_id DESC'),
         'saved_showcases' => $ids('SELECT showcase_id FROM showcase_likes  WHERE user_id = ? ORDER BY created_at DESC, showcase_id DESC'),
         'following'       => $ids('SELECT artist_id   FROM artist_follows  WHERE user_id = ? ORDER BY created_at DESC, artist_id DESC'),
@@ -92,6 +93,13 @@ function is_admin(): bool
 {
     $user = current_user();
     return $user !== null && $user['is_admin'];
+}
+
+// Only the account in SUPER_ADMIN_EMAIL (includes/config.php) may make other users admins.
+function is_super_admin(): bool
+{
+    $user = current_user();
+    return $user !== null && $user['is_admin'] && strcasecmp($user['email'], SUPER_ADMIN_EMAIL) === 0;
 }
 
 // Call this right after a correct password (or a new sign up).

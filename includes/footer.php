@@ -1,5 +1,6 @@
 <?php
-// Shared footer - used by every page. Closes the <main> that header.php opened.
+// Shared footer - used by every page. Closes the <main> that header.php opened
+// (the admin pages close their own <main>, they set $adminLayout = true).
 $footerBgFile = dirname(__DIR__) . '/' . $footerBg;
 $footerStyle  = is_file($footerBgFile) ? ' style="background-image:url(\'../' . e($footerBg) . '\')"' : '';
 $thisPage     = basename($_SERVER['SCRIPT_NAME']);
@@ -10,7 +11,7 @@ $footerLinks = [
     'privacy.php' => 'Privacy &amp; Policy',
 ];
 ?>
-</main>
+<?php if (empty($adminLayout)): ?></main><?php endif; ?>
 
 <footer class="site-footer"<?= $footerStyle ?>>
     <div class="footer-inner">

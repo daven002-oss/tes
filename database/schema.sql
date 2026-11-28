@@ -19,6 +19,8 @@ CREATE DATABASE IF NOT EXISTS vela_artspace CHARACTER SET utf8mb4 COLLATE utf8mb
 USE vela_artspace;
 
 -- Remove old copies first so the file can be imported again (this erases the data!).
+DROP TABLE IF EXISTS message_replies;
+DROP TABLE IF EXISTS messages;
 DROP TABLE IF EXISTS comments;
 DROP TABLE IF EXISTS event_schedules;
 DROP TABLE IF EXISTS artist_follows;
@@ -28,8 +30,8 @@ DROP TABLE IF EXISTS pictures;
 DROP TABLE IF EXISTS events;
 DROP TABLE IF EXISTS showcases;
 DROP TABLE IF EXISTS artworks;
+DROP TABLE IF EXISTS users;      -- users point to artists, so users go first
 DROP TABLE IF EXISTS artists;
-DROP TABLE IF EXISTS users;
 
 -- ------------------------------------------------------------
 -- People who log in
@@ -46,10 +48,12 @@ CREATE TABLE users (
     avatar_path        VARCHAR(255) NULL,                     -- e.g. images/users/alya.jpg (NULL = show initials)
     is_admin           TINYINT(1)   NOT NULL DEFAULT 0,       -- 1 = admin (sees "Admin Overview")
     profile_visibility ENUM('private','public') NOT NULL DEFAULT 'private',
+    artist_id          INT UNSIGNED NULL,                     -- the artist profile used when this user posts artworks (made on the first post)
     created_at         TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     UNIQUE KEY uq_users_username (username),
-    UNIQUE KEY uq_users_email (email)
+    UNIQUE KEY uq_users_email (email),
+    UNIQUE KEY uq_users_artist (artist_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ------------------------------------------------------------
@@ -68,6 +72,9 @@ CREATE TABLE artists (
 -- ------------------------------------------------------------
 -- Artworks (Home "Curated Selection" and the "New" page)
 -- ------------------------------------------------------------
+ALTER TABLE users
+    ADD CONSTRAINT fk_users_artist FOREIGN KEY (artist_id) REFERENCES artists (id) ON DELETE SET NULL;
+
 CREATE TABLE artworks (
     id          INT UNSIGNED NOT NULL AUTO_INCREMENT,
     title       VARCHAR(120) NOT NULL,
@@ -79,12 +86,17 @@ CREATE TABLE artworks (
     location    VARCHAR(80)  NOT NULL DEFAULT '',
     price       VARCHAR(40)  NOT NULL DEFAULT '',
     description TEXT         NULL,
+    status      ENUM('draft','in_review','published') NOT NULL DEFAULT 'published', -- only 'published' artworks are shown on the website
+    submitted_by INT UNSIGNED NULL,                           -- the user who posted it (NULL for gallery content)
     created_at  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     KEY idx_artworks_artist (artist_id),
     KEY idx_artworks_placement (placement),
+    KEY idx_artworks_status (status),
     CONSTRAINT fk_artworks_artist FOREIGN KEY (artist_id) REFERENCES artists (id)
-        ON DELETE RESTRICT ON UPDATE CASCADE
+        ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT fk_artworks_submitter FOREIGN KEY (submitted_by) REFERENCES users (id)
+        ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ------------------------------------------------------------
@@ -132,8 +144,10 @@ CREATE TABLE pictures (
     path       VARCHAR(255) NOT NULL,                         -- e.g. images/new/new-1.png
     owner_type ENUM('artwork','showcase','event','artist_thumb','artist_profile') NOT NULL,
     owner_id   INT UNSIGNED NOT NULL,
+    file_hash  CHAR(64)     NULL,                             -- SHA-256 of an uploaded file: the same image can't be uploaded twice
     PRIMARY KEY (id),
     UNIQUE KEY uq_pictures_path (path),
+    UNIQUE KEY uq_pictures_hash (file_hash),
     UNIQUE KEY uq_pictures_owner (owner_type, owner_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -207,4 +221,33 @@ CREATE TABLE comments (
     CONSTRAINT fk_comments_artwork  FOREIGN KEY (artwork_id)  REFERENCES artworks (id)  ON DELETE CASCADE,
     CONSTRAINT fk_comments_showcase FOREIGN KEY (showcase_id) REFERENCES showcases (id) ON DELETE CASCADE,
     CONSTRAINT chk_comments_one_target CHECK ((artwork_id IS NOT NULL AND showcase_id IS NULL) OR (artwork_id IS NULL AND showcase_id IS NOT NULL))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------- Admin inbox ----------
+CREATE TABLE messages (
+    id             INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    sender_name    VARCHAR(80)  NOT NULL,
+    sender_user_id INT UNSIGNED NULL,
+    subject        VARCHAR(120) NOT NULL,
+    body           TEXT         NOT NULL,
+    artwork_id     INT UNSIGNED NULL,                         -- "Related artwork" card (optional)
+    is_read        TINYINT(1)   NOT NULL DEFAULT 0,
+    is_ignored     TINYINT(1)   NOT NULL DEFAULT 0,
+    created_at     TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    KEY idx_messages_created (created_at),
+    CONSTRAINT fk_messages_user    FOREIGN KEY (sender_user_id) REFERENCES users (id)    ON DELETE SET NULL,
+    CONSTRAINT fk_messages_artwork FOREIGN KEY (artwork_id)     REFERENCES artworks (id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE message_replies (
+    id         INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    message_id INT UNSIGNED NOT NULL,
+    admin_id   INT UNSIGNED NULL,
+    body       TEXT         NOT NULL,
+    created_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    KEY idx_replies_message (message_id),
+    CONSTRAINT fk_replies_message FOREIGN KEY (message_id) REFERENCES messages (id) ON DELETE CASCADE,
+    CONSTRAINT fk_replies_admin   FOREIGN KEY (admin_id)   REFERENCES users (id)    ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

@@ -40,10 +40,10 @@ require __DIR__ . '/../includes/header.php';
             </p>
             <h2><?= e($art['title']) ?></h2>
             <p class="specs">
-                Size: <?= e($art['size']) ?><br>
-                Medium: <?= e($art['medium']) ?><br>
-                Year: <?= e($art['year']) ?><br>
-                Location: <?= e($art['location']) ?>
+                Size: <?= e($art['size'] !== '' ? $art['size'] : '-') ?><br>
+                Medium: <?= e($art['medium'] !== '' ? $art['medium'] : '-') ?><br>
+                Year: <?= e($art['year'] !== '' ? $art['year'] : '-') ?><br>
+                Location: <?= e($art['location'] !== '' ? $art['location'] : '-') ?>
             </p>
             <p class="desc"><?= e($art['description']) ?></p>
             <p class="price"><?= e($art['price']) ?></p>

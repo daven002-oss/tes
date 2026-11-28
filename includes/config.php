@@ -28,3 +28,6 @@ $socialLinks = [
     'facebook'  => '#',
     'x'         => '#',
 ];
+
+// The ONE account that may make other users admins (Admin > Users page).
+define('SUPER_ADMIN_EMAIL', 'admin@vela.test');

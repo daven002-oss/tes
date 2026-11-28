@@ -127,3 +127,18 @@ INSERT INTO event_schedules (user_id, event_id) VALUES (2, 1), (2, 2);
 INSERT INTO comments (user_id, showcase_id, body, created_at) VALUES
 (3, 1, 'In mauris porttitor tincidunt mauris massa sit lorem sed scelerisque. Fringilla pharetra vel massa enim sollicitudin cras. At pulvinar eget sociis adipiscing eget donec ultricies nibh tristique.', '2021-08-19 10:00:00'),
 (3, 1, 'In mauris porttitor tincidunt mauris massa sit lorem sed scelerisque. Fringilla pharetra vel massa enim sollicitudin cras. At pulvinar eget sociis adipiscing eget donec ultricies nibh tristique.', '2021-08-19 11:00:00');
+
+-- Demo submissions for the admin "Review Submissions" page (no picture yet - they show a grey box)
+INSERT INTO artworks (id, title, artist_id, placement, size, medium, year_text, location, price, description, status) VALUES
+(17, 'Sunrise Study', 6, 'new', '1920 x 1080', 'Digital art', '2026', 'Jakarta', '$500 USD', 'A demo submission waiting for the admin to review it.', 'in_review'),
+(18, 'Quiet Pines', 7, 'new', '1920 x 1080', 'Digital art', '2026', 'Jakarta', '$500 USD', 'A demo draft: changes were requested by the admin.', 'draft');
+
+-- Demo messages for the admin Messages page
+INSERT INTO messages (id, sender_name, subject, body, artwork_id, is_read, created_at) VALUES
+(1, 'Nadia Putri', 'Artwork availability', 'Hi VELA, I came across Golden lake on your website. Is the artwork still on show? I would love to know more about it and how to arrange a gallery visit.', 8, 0, NOW() - INTERVAL 2 HOUR),
+(2, 'Makoto', 'Artist application', 'Thank you for reviewing my profile.', NULL, 1, NOW() - INTERVAL 3 HOUR),
+(3, 'venglish viera', 'Artwork submission', 'I have uploaded the artwork details.', 17, 1, NOW() - INTERVAL 1 DAY),
+(4, 'D0ria', 'Artwork update', 'The updated image is now attached.', 3, 1, NOW() - INTERVAL 2 DAY),
+(5, 'VELA Community', 'Gallery visit', 'Thank you for the information.', NULL, 1, NOW() - INTERVAL 3 DAY);
+INSERT INTO message_replies (message_id, admin_id, body, created_at) VALUES
+(4, 1, 'Thank you, D0ria. We have updated the artwork page.', NOW() - INTERVAL 47 HOUR);

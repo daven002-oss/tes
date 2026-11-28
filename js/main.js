@@ -189,4 +189,83 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     });
+
+    // ---------- Pop-ups (Edit profile, Post artwork) ----------
+    document.querySelectorAll('[data-open-dialog]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var dialog = document.getElementById(btn.getAttribute('data-open-dialog'));
+            if (dialog && dialog.showModal) dialog.showModal();
+        });
+    });
+    document.querySelectorAll('dialog.modal').forEach(function (dialog) {
+        dialog.querySelectorAll('[data-close-dialog]').forEach(function (b) {
+            b.addEventListener('click', function () { dialog.close(); });
+        });
+        dialog.addEventListener('click', function (event) {      // click on the dark background closes it
+            if (event.target === dialog) dialog.close();
+        });
+    });
+
+    // Profile picture preview in Edit profile
+    var avatarInput = document.querySelector('[data-avatar-input]');
+    var avatarPreview = document.querySelector('[data-avatar-preview]');
+    if (avatarInput && avatarPreview) {
+        avatarInput.addEventListener('change', function () {
+            var file = avatarInput.files && avatarInput.files[0];
+            if (!file) return;
+            var img = document.createElement('img');
+            img.alt = '';
+            img.src = URL.createObjectURL(file);
+            avatarPreview.innerHTML = '';
+            avatarPreview.appendChild(img);
+        });
+    }
+
+    // ---------- "Are you sure?" pop-up for Delete buttons ----------
+    // Any <form data-confirm="question"> asks first. Optional: data-confirm-yes (button text),
+    // data-confirm-title, data-confirm-tone="neutral" (black button instead of red).
+    var confirmDialog = document.getElementById('confirm-dialog');
+    var pendingForm = null;
+    if (confirmDialog) {
+        var yes = confirmDialog.querySelector('[data-confirm-yes]');
+        var no = confirmDialog.querySelector('[data-confirm-no]');
+        document.querySelectorAll('form[data-confirm]').forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (form.dataset.confirmed === '1') return;      // already confirmed: let it go
+                event.preventDefault();
+                if (!confirmDialog.showModal) {                  // very old browser
+                    if (window.confirm(form.getAttribute('data-confirm'))) { form.dataset.confirmed = '1'; form.submit(); }
+                    return;
+                }
+                pendingForm = form;
+                confirmDialog.querySelector('#confirm-title').textContent = form.getAttribute('data-confirm-title') || 'Are you sure?';
+                confirmDialog.querySelector('#confirm-text').textContent = form.getAttribute('data-confirm');
+                yes.textContent = form.getAttribute('data-confirm-yes') || 'Yes, delete';
+                yes.className = form.getAttribute('data-confirm-tone') === 'neutral' ? 'btn-black-sm' : 'btn-danger';
+                confirmDialog.showModal();
+                no.focus();
+            });
+        });
+        no.addEventListener('click', function () { pendingForm = null; confirmDialog.close(); });
+        confirmDialog.addEventListener('click', function (event) {
+            if (event.target === confirmDialog) { pendingForm = null; confirmDialog.close(); }
+        });
+        yes.addEventListener('click', function () {
+            var form = pendingForm;
+            pendingForm = null;
+            confirmDialog.close();
+            if (form) { form.dataset.confirmed = '1'; form.submit(); }
+        });
+    }
+
+    // ---------- Admin inbox: filter the list while typing ----------
+    var inboxSearch = document.querySelector('[data-inbox-search]');
+    if (inboxSearch) {
+        inboxSearch.addEventListener('input', function () {
+            var term = inboxSearch.value.trim().toLowerCase();
+            document.querySelectorAll('.inbox-item').forEach(function (item) {
+                item.hidden = term !== '' && item.getAttribute('data-text').indexOf(term) === -1;
+            });
+        });
+    }
 });

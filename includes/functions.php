@@ -153,3 +153,63 @@ function handle_comment_post(string $type, int $id): void
     header('Location: ' . strtok($_SERVER['REQUEST_URI'], '#') . '#comments-title');
     exit;
 }
+
+// ---------- One-time messages shown after a form (saved, error...) ----------
+function flash_set(string $message, string $kind = 'ok'): void
+{
+    $_SESSION['flash'] = ['message' => $message, 'kind' => $kind];
+}
+
+// Returns the message once, then forgets it.
+function flash_html(): string
+{
+    if (empty($_SESSION['flash'])) {
+        return '';
+    }
+    $f = $_SESSION['flash'];
+    unset($_SESSION['flash']);
+    return '<p class="notice ' . ($f['kind'] === 'error' ? 'error' : 'success') . '" role="status">' . e($f['message']) . '</p>';
+}
+
+// "2h ago", "3d ago"...
+function time_ago(string $datetime): string
+{
+    $diff = max(0, time() - strtotime($datetime));
+    if ($diff < 3600)  { return max(1, (int) ($diff / 60)) . 'm ago'; }
+    if ($diff < 86400) { return (int) ($diff / 3600) . 'h ago'; }
+    return (int) ($diff / 86400) . 'd ago';
+}
+
+// Artwork status (artworks.status) as words, and its CSS class.
+function status_label(string $status): string
+{
+    return ['published' => 'Published', 'in_review' => 'In review', 'draft' => 'Draft'][$status] ?? $status;
+}
+
+/*
+ * Deletes an artwork (and its likes, comments, picture row and uploaded file).
+ * Returns false if it does not exist.
+ */
+function delete_artwork(int $id): bool
+{
+    $pdo = db();
+    $pic = $pdo->prepare("SELECT path FROM pictures WHERE owner_type = 'artwork' AND owner_id = ?");
+    $pic->execute([$id]);
+    $path = $pic->fetchColumn();
+
+    $del = $pdo->prepare('DELETE FROM artworks WHERE id = ?');
+    $del->execute([$id]);
+    if ($del->rowCount() === 0) {
+        return false;
+    }
+    delete_uploaded_file($path ?: null);     // the trigger already removed the `pictures` row
+    return true;
+}
+
+// Sends the browser to a page and stops.
+function redirect(string $to): void
+{
+    header('Location: ' . $to);
+    exit;
+}
+
